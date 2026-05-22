@@ -2,7 +2,7 @@ services:
   backend:
     build:
       context: ./backend
-    container_name: effective_mobile_backend
+    container_name: backend_http_server
     expose:
       - "8080"
     networks:
@@ -10,7 +10,8 @@ services:
 
   nginx:
     image: nginx:1.27-alpine
-    container_name: effective_mobile_nginx
+    container_name: nginx
+#depends_on добавлен, чтобы nginx не упал с ошибкой, если не сможет подключиться к бэкенду.
     depends_on:
       - backend
     ports:

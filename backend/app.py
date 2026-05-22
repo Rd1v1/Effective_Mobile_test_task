@@ -7,3 +7,5 @@ app = FastAPI()
 @app.get("/", response_class=PlainTextResponse)
 def read_root() -> str:
     return "Hello from Effective Mobile!"
+
+    
