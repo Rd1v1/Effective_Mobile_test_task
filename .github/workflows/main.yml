@@ -1,0 +1,46 @@
+name: CI/CD
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and smoke test
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show Docker versions
+        run: |
+          docker --version
+          docker compose version
+
+      - name: Build containers
+        run: docker compose build
+
+      - name: Start app
+        run: docker compose up -d
+
+      - name: Smoke test
+        run: |
+          for i in {1..15}; do
+            if curl -fsS http://localhost | grep -q "Hello from Effective Mobile!"; then
+              echo "Smoke test passed"
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "Smoke test failed"
+          docker compose logs
+          exit 1
+
+      - name: Stop app
+        if: always()
+        run: docker compose down -v
